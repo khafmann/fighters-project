@@ -8,23 +8,33 @@ import { FightsModule } from './fights/fights.module';
 import { RankingsModule } from './rankings/rankings.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { WeightClassesModule } from './weight-classes/weight-classes.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import * as path from 'path';
 
 @Module({
   imports: [
-    GraphQLModule.forRoot({
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: path.resolve(__dirname, '../.env'),
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: '123456',
-      database: 'fighters_database',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: configService.get<boolean>('DB_SYNCHRONIZE', true),
+      }),
     }),
     FightersModule,
     EventsModule,
