@@ -5,16 +5,28 @@ import { Fighter } from '../entities/fighter.entity';
 import { FightStats } from '../dto/fight-stats.dto';
 import {CreateFighterInput} from "./dto/create-fighter.input";
 import {UpdateFighterInput} from "./dto/update-fighter.input";
+import {WeightClass} from "../entities/weight-class.entity";
 
 @Injectable()
 export class FightersService {
     constructor(
         @InjectRepository(Fighter)
         private fightersRepository: Repository<Fighter>,
+        @InjectRepository(WeightClass)
+        private weightClassRepository: Repository<WeightClass>
     ) {}
 
     async create(createFighterInput: CreateFighterInput): Promise<Fighter> {
         const fighter = this.fightersRepository.create(createFighterInput);
+
+        if (createFighterInput.weightClassId) {
+            const weightClass = await this.weightClassRepository.findOneBy({ id: createFighterInput.weightClassId });
+            if (!weightClass) {
+                throw new NotFoundException(`Weight with id = ${createFighterInput.weightClassId} not found`);
+            }
+            fighter.weightClass = weightClass;
+        }
+
         return this.fightersRepository.save(fighter);
     }
 
@@ -23,10 +35,13 @@ export class FightersService {
     }
 
     async findOne(id: number): Promise<Fighter> {
-        const fighter = await this.fightersRepository.findOneBy({ id });
+        const fighter = await this.fightersRepository.findOne({
+            where: { id },
+            relations: ['weightClass'],
+        });
 
         if (!fighter) {
-            throw new NotFoundException(`Fighter with ud = ${id} not found`);
+            throw new NotFoundException(`Fighter with id = ${id} not found`);
         }
 
         return fighter;
