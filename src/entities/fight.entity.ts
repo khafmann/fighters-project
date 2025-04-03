@@ -1,8 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { Fighter } from "./fighter.entity";
 import { Event } from "./event.entity";
-import {Field, ID} from "@nestjs/graphql";
+import {Field, ID, ObjectType} from "@nestjs/graphql";
 
+@ObjectType()
 @Entity()
 export class Fight {
     @PrimaryGeneratedColumn()

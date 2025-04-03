@@ -1,8 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Fighter } from "./fighter.entity";
 import { WeightClass } from "./weight-class.entity";
-import {Field, ID} from "@nestjs/graphql";
+import {Field, ID, ObjectType} from "@nestjs/graphql";
 
+@ObjectType()
 @Entity()
 export class Ranking {
 
