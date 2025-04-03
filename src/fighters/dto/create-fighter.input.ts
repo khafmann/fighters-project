@@ -22,4 +22,13 @@ export class CreateFighterInput {
 
     @Field(() => Int, { nullable: true })
     weightClassId?: number;
+
+    @Field(() => Int, { defaultValue: 0 })
+    wins: number;
+
+    @Field(() => Int, { defaultValue: 0 })
+    losses: number;
+
+    @Field(() => Int, { defaultValue: 0 })
+    knockouts: number;
 }
