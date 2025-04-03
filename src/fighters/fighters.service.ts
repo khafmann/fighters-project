@@ -31,7 +31,9 @@ export class FightersService {
     }
 
     async findAll(): Promise<Fighter[]> {
-        return this.fightersRepository.find();
+        return this.fightersRepository.find({
+            relations: ['weightClass'],
+        });
     }
 
     async findOne(id: number): Promise<Fighter> {

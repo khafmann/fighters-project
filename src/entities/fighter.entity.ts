@@ -38,7 +38,7 @@ export class Fighter {
     @Field()
     knockouts: number;
 
-    @ManyToOne(() => WeightClass, weightClass => weightClass.fighters)
+    @ManyToOne(() => WeightClass)
     @Field(() => WeightClass, { nullable: true })
     weightClass: WeightClass;
 
